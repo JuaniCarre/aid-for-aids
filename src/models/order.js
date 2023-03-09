@@ -4,6 +4,7 @@ module.exports = (sequelize) => {
     sequelize.define('order', {
         id: {
             type: DataTypes.INTEGER,
+            autoIncrement:true,
             primaryKey: true
         },
         items: {
@@ -11,9 +12,9 @@ module.exports = (sequelize) => {
         },
         status: {
             type: DataTypes.ENUM('pendiente', 'pago', 'entregado', 'cancelado'),
-            defaltvalue: 'pendiente'
+            defaultValue: 'pendiente'
         },
-        adress: {
+        address: {
             type:STRING
         }
     })

@@ -4,6 +4,7 @@ module.exports = (sequelize) => {
     sequelize.define('user', {
         id: {
             type: DataTypes.INTEGER,
+            autoIncrement:true,
             primaryKey: true
         },
         name:{
@@ -12,7 +13,8 @@ module.exports = (sequelize) => {
         },
         email: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            unique:true
         },
         password: {
             type: DataTypes.STRING,
@@ -25,7 +27,12 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING
         },
         cart:{
-            type: DataTypes.ARRAY(DataTypes.JSONB)
+            type: DataTypes.ARRAY(DataTypes.JSON),
+            defaultValue: []
+        },
+        orders:{
+            type: DataTypes.ARRAY(DataTypes.JSON),
+            defaultValue: []
         }
     })
 }

@@ -4,26 +4,30 @@ module.exports = (sequelize) => {
     sequelize.define('product', {
         id: {
             type: DataTypes.INTEGER,
+            autoIncrement:true,
             primaryKey: true
         },
         titulo: {
             type: DataTypes.STRING,
             allowNull: false
         },
-        ISBN: {
+        codigo: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull:false
+        },
+        editorial: {
+            type: DataTypes.STRING,
         },
         autor: {
             type: DataTypes.STRING,
-            allowNull: false
         },
         precio: {
-            type: DataTypes.DECIMAL(7, 2)
+            type: DataTypes.DECIMAL(7, 2),
+            allowNull: false
         },
         stock: {
             type: DataTypes.INTEGER,
-            defaultValue: 0
+            allowNull: false
         }
     })
 }
