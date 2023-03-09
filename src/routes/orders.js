@@ -12,17 +12,39 @@ router.put('/:order', async(req, res) =>{//verifica el pago de la orden, comprue
     const orderId = req.params.order
     const order = await Order.findByPk(orderId)
     const completeOrder = await order.dataValues.items
-    let flag = true
-    completeOrder.forEach(async e => {
-        const producto = await Product.findByPk(e.id)
-        if(e.stock > producto.stock){
-            flag = false
-        } else {
-            await producto.update(stock=producto.stock-e.stock)
-            console.log(producto)
+    let comparador = []
+
+    for (const e of completeOrder) {//corrobora stock
+        const inventory = await Product.findByPk(e.id)
+    
+        const item = {
+            id: e.id,
+            stock: e.stock,
+            available: true
         }
-    })
-    res.send("ok")
+    
+        if(item.stock <= inventory.dataValues.stock){
+            comparador = [...comparador, item]
+        } else {
+            item.available=false
+
+            comparador = [...comparador, item]
+        }
+    }
+    const outOfStock = comparador.filter(e => e.available == false)
+
+    if(outOfStock.length>0){//si algun producto no esta disponible
+        const ids = outOfStock.map(e=>e.id)
+        res.send({outOfStock: ids}).status(200)//envia un array con los Id de los productos no disponibles
+    } else {
+        order.update({status:"pago"})//procesa el pago
+        for(const e of comparador) {//descuenta stock
+            const bought = await Product.findByPk(e.id)//encuentra individualmente cada producto en la orden
+            const newStock = (bought.stock - e.stock)//calcula el nuevo stock
+            await bought.update({stock:newStock}, {where:{id:e.id}})//actualiza el stock en DB
+        }
+        res.send("Pago registrado correctamente!").status(200)
+    }
 })
 
 router.post("/:id", async(req, res) => {//genera una orden a partir del carrito y elimina el carrito actual.
