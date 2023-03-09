@@ -5,7 +5,7 @@ const router = Router()
 router.get("/:id", async(req, res) => { //trae las ordenes del usuario
     const userId = req.params.id
     const user = await User.findByPk(userId)
-    res.send(user)
+    res.send(user.orders)
 })
 
 router.put('/:order', async(req, res) =>{//verifica el pago de la orden, comprueba el stock disponible y descuenta del stock los productos comprados.
@@ -37,7 +37,8 @@ router.put('/:order', async(req, res) =>{//verifica el pago de la orden, comprue
         const ids = outOfStock.map(e=>e.id)
         res.send({outOfStock: ids}).status(200)//envia un array con los Id de los productos no disponibles
     } else {
-        order.update({status:"pago"})//procesa el pago
+        //Aqui se deberia procesar el pago. Si es exitoso =>
+        order.update({status:"pago"})
         for(const e of comparador) {//descuenta stock
             const bought = await Product.findByPk(e.id)//encuentra individualmente cada producto en la orden
             const newStock = (bought.stock - e.stock)//calcula el nuevo stock
@@ -50,9 +51,13 @@ router.put('/:order', async(req, res) =>{//verifica el pago de la orden, comprue
 router.post("/:id", async(req, res) => {//genera una orden a partir del carrito y elimina el carrito actual.
     const userId = req.params.id
     const user = await User.findByPk(userId)
-    const newOrder = await Order.create({items:user.cart, userId: userId, address:user.address})
-    user.update({orders:[...user.orders, newOrder], cart:[]})
-    res.send(newOrder)
+    if(user.cart.length>0){
+        const newOrder = await Order.create({items:user.cart, userId: userId, address:user.address})
+        user.update({orders:[...user.orders, newOrder], cart:[]})
+        res.send(newOrder)
+    } else {
+        res.status(200).send("El usuario no tiene productos en su carrito")
+    }
 })
 
 

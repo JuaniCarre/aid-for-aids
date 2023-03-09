@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const { User, Product } = require('../db');
+const bcryptjs = require('bcryptjs')
 const router = Router()
 
 router.get('/:id', async(req, res) => {//detalle del usuario.
@@ -21,8 +22,13 @@ router.put("/add/:id", async(req, res) => {//añadir item al carrito
         const product = await Product.findByPk(id)
         product.stock = stock
         const user = await User.findByPk(userId)
-        await User.update({cart:[...user.cart, product]}, {where: { id:userId}})
-        res.status(200).send("producto añadido al carrito de compras.")
+        const duplicate = user.cart.find(e=>e.id === id)
+        if(!duplicate){
+            await User.update({cart:[...user.cart, product]}, {where: { id:userId}})
+            res.status(200).send("producto añadido al carrito de compras.")
+        } else {
+            res.status(200).send("Este producto ya se encuentra en el carrito de compras.")
+        }
     } catch (error) {
         res.status(500).send(error.message)
     }
@@ -47,22 +53,20 @@ router.put("/:id", async (req, res) => {//editar direccion e imagen.
     }
 })
 
-router.post('/', async(req, res, next) => {//creacion de usuario
+router.post('/register', async(req, res, next) => {//creacion de usuario
     const { name, email, password } = req.body
+    const passwordHash = await bcryptjs.hash(password, 8)
     try { 
         const newUser = await User.create({
-            name, email, password
+            name, email, password:passwordHash
         })
         res.status(201).send(newUser)
     }
     catch(error){
-        if(error.parent.code == 23505){
-            res.status(408).send("Ya existe un usuario registrado con ese email.")
-        } else {
-            res.status(500).send("Algo ha salido mal, intente nuevamente.")
+            res.status(500).send(error.message)
         }
     }
-})
+)
 
 
 module.exports = router
