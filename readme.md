@@ -1,6 +1,9 @@
 Esta api fue desarrollada en NodeJs con PostgreSQL y Sequelize, debido a que no conozco la tencologia de Prisma, y por falta de tiempo no pude implementarla. 
-En este momento estoy trabajando en la seguridad de la informacion utilizando Bcryptjs, pero no se si lograre implementarla correctamente para el horario de entrega.
 
+Para inicializar el proyecyo se debe abrir una terminal situada en la carpeta donde se haya clonado el repositorio,
+crear una base de datos en PostgreSQL, ejecutar el comando "NPM install" y reemplazar la URI de la base de datos en el archivo db.js (linea 6, columna 34) por la URI de la base de datos creada para correr este proyecto.
+
+una vez realizado este proceso, basta con ejecutar el comando NPM start para correr el servidor en el entorno local.
 
 Users (group)
     user(endpoint)
@@ -137,6 +140,7 @@ Product(group)
         precio: DECIMAL(7,2)
         editorial: STRING
         stock: INT
+        distribuidor: STRING ("desconocido" por defecto1)
     }
 
     response: el objeto del producto creado

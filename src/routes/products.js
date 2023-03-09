@@ -24,8 +24,8 @@ router.put("/:id", async(req, res) => {
 })
 
 router.post('/', async(req, res) => {
-    const { titulo, codigo, autor, precio, editorial, stock } = req.body
-    const product = await Product.create({ titulo, codigo, autor, precio, editorial, stock})
+    const { titulo, codigo, autor, precio, editorial, stock, distribuidor } = req.body
+    const product = await Product.create({ titulo, codigo, autor, precio, editorial, stock, distribuidor})
     res.status(200).send(product)
 })
 

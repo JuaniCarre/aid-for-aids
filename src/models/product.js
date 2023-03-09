@@ -28,6 +28,10 @@ module.exports = (sequelize) => {
         stock: {
             type: DataTypes.INTEGER,
             allowNull: false
+        },
+        distribuidor: {
+            type: DataTypes.STRING,
+            defaultValue:"desconocido"
         }
     })
 }
